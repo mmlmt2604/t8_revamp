@@ -5,6 +5,6 @@ export default defineConfig({
   extensionApi: 'chrome',
   modules: ['@wxt-dev/module-vue'],
   manifest: {
-    permissions: ['alarms', 'storage'],
+    permissions: ['alarms', 'storage', 'notifications'], 
   },
 });
