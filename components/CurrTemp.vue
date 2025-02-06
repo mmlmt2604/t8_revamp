@@ -8,7 +8,7 @@ const props = defineProps<{
 
 <template>
    <div class="text-center h-full border-round-sm bg-primary font-bold">
-    Current Weather 
+    Current temp 
     {{ tempData.temperature }}
 
   </div>

@@ -8,6 +8,7 @@ export default defineBackground(() => {
   if (alarm.name === 'fetchData') {  
   fetchWeatherData();  
   fetchWarningData();  
+  fetchTempData();
   }  
   }); 
 
@@ -33,7 +34,7 @@ const weatherData = {
 
 };  
 chrome.storage.sync.set({ weatherData });  
-// chrome.runtime.sendMessage({ action: 'updateWeather', data: weatherData });  
+chrome.runtime.sendMessage({ action: 'updateWeather', data: weatherData });  
 })  
 .catch(error => {  
 console.error('Error fetching weather data:', error);  
@@ -50,10 +51,9 @@ if (isUpdating) return; // Skip if an update is already in progress
 fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warnsum&lang=en') // Replace with actual API  
 .then(response => response.json())  
 .then(data => {  
-  console.log("xxx");
 const warningData = data;  
 chrome.storage.sync.set({ warningData });  
-// chrome.runtime.sendMessage({ action: 'updateWarnings', data: warningData });  
+chrome.runtime.sendMessage({ action: 'updateWarnings', data: warningData });  
 const warningObjects = Object.keys(warningData).map(key => {
   return {
     name: warningData[key].name,
@@ -80,3 +80,37 @@ console.error('Error fetching warning data:', error);
 isUpdating = false; // Reset the flag after the update is complete  
 });  
 }  
+
+function fetchTempData() {  
+  if (isUpdating) return; // Skip if an update is already in progress  
+  //isUpdating = true;  
+    
+  fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=en') // Replace with actual API  
+  .then(response => response.json())  
+  .then(data => {  
+  const tempData = data;  
+  chrome.storage.sync.set({ tempData });  
+  chrome.runtime.sendMessage({ action: 'updateTemp', data: tempData });  
+  const warningObjects = Object.keys(tempData).map(key => {
+    return {
+      rainfall: data.rainfall,  
+      temperature: data.temperature,  
+      humidity: data.humidity, 
+    };
+  });
+  // if (data) { 
+  // chrome.notifications.create({  
+  // type: 'basic',  
+  // iconUrl: imageUrl,  
+  // title: 'Cyclone Warning',  
+  // message: `Warning Level: ${data.level}`,  
+  // });  
+  // }  
+  })  
+  .catch(error => {  
+  console.error('Error fetching warning data:', error);  
+  })  
+  .finally(() => {  
+  isUpdating = false; // Reset the flag after the update is complete  
+  });  
+  }  
