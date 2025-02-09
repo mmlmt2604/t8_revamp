@@ -2,14 +2,14 @@
 import { defineProps } from 'vue';
 
 const props = defineProps<{
-  tempData: Record<string, any>;
+  foreData: Record<string, any>;
 }>();
 </script> 
 
 <template>
    <div class="text-center h-full border-round-sm bg-primary font-bold">
     Current Weather 
-    {{ tempData.temperature }}
+    {{ foreData }}
 
   </div>
 </template>

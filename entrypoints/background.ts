@@ -4,20 +4,31 @@ export default defineBackground(() => {
   console.log('Hello background!', { id: browser.runtime.id });
   chrome.alarms.create('fetchData', { periodInMinutes: 0.1});  
   
-  chrome.alarms.onAlarm.addListener((alarm) => {  
-  if (alarm.name === 'fetchData') {  
-  fetchWeatherData();  
-  fetchWarningData();  
-  fetchTempData();
-  }  
-  }); 
-
+  // chrome.alarms.onAlarm.addListener((alarm) => {  
+  // if (alarm.name === 'fetchData') {  
+  // fetchWeatherData();  
+  // fetchWarningData();  
+  // fetchTempData();
+  // fetchForeData();
+  // }  
+  // }); 
+  chrome.runtime.onMessage.addListener((message) => {  
+    if (message.action === 'weatherRequest') {  
+      console.log('Received weather request');
+      fetchWeatherData();  
+      fetchWarningData();  
+      fetchTempData();
+      fetchForeData();
+    }    
+});
 });
 
 
 let isUpdating = false; // Shared state to track update status  
   
 function fetchWeatherData() {  
+  console.log('Fetching weather data...');
+
 if (isUpdating) return; // Skip if an update is already in progress  
 //isUpdating = true;  
   
@@ -91,13 +102,7 @@ function fetchTempData() {
   const tempData = data;  
   chrome.storage.sync.set({ tempData });  
   chrome.runtime.sendMessage({ action: 'updateTemp', data: tempData });  
-  const warningObjects = Object.keys(tempData).map(key => {
-    return {
-      rainfall: data.rainfall,  
-      temperature: data.temperature,  
-      humidity: data.humidity, 
-    };
-  });
+
   // if (data) { 
   // chrome.notifications.create({  
   // type: 'basic',  
@@ -113,4 +118,38 @@ function fetchTempData() {
   .finally(() => {  
   isUpdating = false; // Reset the flag after the update is complete  
   });  
-  }  
+}  
+
+function fetchForeData() {  
+    if (isUpdating) return; // Skip if an update is already in progress  
+    //isUpdating = true;  
+      
+    fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=en') // Replace with actual API  
+    .then(response => response.json())  
+    .then(data => {  
+    const foreData = data;  
+    chrome.storage.sync.set({ foreData });  
+    chrome.runtime.sendMessage({ action: 'updateFore', data: foreData });  
+    // const warningObjects = Object.keys(tempData).map(key => {
+    //   return {
+    //     rainfall: data.rainfall,  
+    //     temperature: data.temperature,  
+    //     humidity: data.humidity, 
+    //   };
+    // });
+    // if (data) { 
+    // chrome.notifications.create({  
+    // type: 'basic',  
+    // iconUrl: imageUrl,  
+    // title: 'Cyclone Warning',  
+    // message: `Warning Level: ${data.level}`,  
+    // });  
+    // }  
+    })  
+    .catch(error => {  
+    console.error('Error fetching warning data:', error);  
+    })  
+    .finally(() => {  
+    isUpdating = false; // Reset the flag after the update is complete  
+    });  
+}  

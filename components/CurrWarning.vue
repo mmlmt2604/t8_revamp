@@ -8,9 +8,10 @@ const props = defineProps<{
 
 <template>
    <div class="text-center h-full border-round-sm bg-primary font-bold">
-    Current Warning 
-    {{ warningData }}
+  <li v-for="(warning, index) in warningData.warningData">
+ {{warning.code}}
 
+</li>
   </div>
 </template>
 

@@ -2,14 +2,19 @@
 import { defineProps } from 'vue';
 
 const props = defineProps<{
-  tempData: Record<string, any>;
+  weatherData: Record<string, any>;
 }>();
+const weatherData = computed(() => {
+  return props.weatherData.weatherData;
+})
 </script> 
 
 <template>
    <div class="text-center h-full border-round-sm bg-primary font-bold">
-    Current Weather 
-    {{ tempData.temperature }}
+
+    <li>    {{ weatherData?.generalSituation }} </li>
+
+    <li>    {{ weatherData?.outlook }} </li>
 
   </div>
 </template>
