@@ -4,13 +4,20 @@ import { defineProps } from 'vue';
 const props = defineProps<{
   foreData: Record<string, any>;
 }>();
+
+const foreData = computed(() => {
+  return props.foreData.foreData;
+})
 </script> 
 
 <template>
    <div class="text-center h-full border-round-sm bg-primary font-bold">
-    Current Weather 
-    {{ foreData }}
+    <li v-for="(foreDay, index) in foreData?.weatherForecast"> 
+      {{ foreDay?.week }}
+      {{ foreDay?.forecastMaxtemp }}
+      {{ foreDay?.forecastMintemp }}
 
+    </li>
   </div>
 </template>
 
