@@ -14,10 +14,11 @@ const foreData = computed(() => {
    <div class="text-center h-full border-round-sm bg-primary font-bold">
     <li v-for="(foreDay, index) in foreData?.weatherForecast"> 
       {{ foreDay?.week }}
-      {{ foreDay?.forecastMaxtemp }}
-      {{ foreDay?.forecastMintemp }}
+      {{ foreDay?.forecastMaxtemp.value }}
+      {{ foreDay?.forecastMintemp.value }}
 
     </li>
+
   </div>
 </template>
 

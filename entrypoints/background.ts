@@ -2,7 +2,7 @@ import imageUrl from '~/assets/icon.png';
 
 export default defineBackground(() => {
   console.log('Hello background!', { id: browser.runtime.id });
-  chrome.alarms.create('fetchData', { periodInMinutes: 0.1});  
+  // chrome.alarms.create('fetchData', { periodInMinutes: 0.1});  
   
   // chrome.alarms.onAlarm.addListener((alarm) => {  
   // if (alarm.name === 'fetchData') {  
@@ -19,6 +19,8 @@ export default defineBackground(() => {
       fetchWarningData();  
       fetchTempData();
       fetchForeData();
+      fetchWarningDetail();
+      fetchSWT();
     }    
 });
 });
@@ -152,4 +154,72 @@ function fetchForeData() {
     .finally(() => {  
     isUpdating = false; // Reset the flag after the update is complete  
     });  
+}  
+
+function fetchWarningDetail() {  
+  if (isUpdating) return; // Skip if an update is already in progress  
+  //isUpdating = true;  
+    
+  fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=warningInfo&lang=en') // Replace with actual API  
+  .then(response => response.json())  
+  .then(data => {  
+  const warningDetailData = data;  
+  chrome.storage.sync.set({ warningDetailData });  
+  chrome.runtime.sendMessage({ action: 'updateWarnDetail', data: warningDetailData });  
+  // const warningObjects = Object.keys(tempData).map(key => {
+  //   return {
+  //     rainfall: data.rainfall,  
+  //     temperature: data.temperature,  
+  //     humidity: data.humidity, 
+  //   };
+  // });
+  // if (data) { 
+  // chrome.notifications.create({  
+  // type: 'basic',  
+  // iconUrl: imageUrl,  
+  // title: 'Cyclone Warning',  
+  // message: `Warning Level: ${data.level}`,  
+  // });  
+  // }  
+  })  
+  .catch(error => {  
+  console.error('Error fetching warning data:', error);  
+  })  
+  .finally(() => {  
+  isUpdating = false; // Reset the flag after the update is complete  
+  });  
+}  
+
+function fetchSWT() {  
+  if (isUpdating) return; // Skip if an update is already in progress  
+  //isUpdating = true;  
+    
+  fetch('https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=swt&lang=en') // Replace with actual API  
+  .then(response => response.json())  
+  .then(data => {  
+  const swtData = data;  
+  chrome.storage.sync.set({ swtData });  
+  chrome.runtime.sendMessage({ action: 'updateSWT', data: swtData });  
+  // const warningObjects = Object.keys(tempData).map(key => {
+  //   return {
+  //     rainfall: data.rainfall,  
+  //     temperature: data.temperature,  
+  //     humidity: data.humidity, 
+  //   };
+  // });
+  // if (data) { 
+  // chrome.notifications.create({  
+  // type: 'basic',  
+  // iconUrl: imageUrl,  
+  // title: 'Cyclone Warning',  
+  // message: `Warning Level: ${data.level}`,  
+  // });  
+  // }  
+  })  
+  .catch(error => {  
+  console.error('Error fetching warning data:', error);  
+  })  
+  .finally(() => {  
+  isUpdating = false; // Reset the flag after the update is complete  
+  });  
 }  

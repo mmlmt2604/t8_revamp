@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import { defineProps } from 'vue';
+import Button from 'primevue/button';
 
 const props = defineProps<{
   warningData: Record<string, any>;
 }>();
+const emit = defineEmits(['showWarning']);
+
 </script> 
 
 <template>
@@ -12,7 +15,10 @@ const props = defineProps<{
  {{warning.code}}
 
 </li>
+<Button label="Show" @click="emit('showWarning')"/>
+
   </div>
+
 </template>
 
 

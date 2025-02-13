@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { defineProps, computed } from 'vue';
+import Button from 'primevue/button';
 
 const region = "Sha Tin";
 const props = defineProps<{
   tempData: any;
 }>();
 
+const emit = defineEmits(['showWeatherDetail']);
 
 const tempMap= computed(() => {
   const temperatureMap = new Map();
@@ -17,9 +19,10 @@ temperatureMap.set(element.place, element.value);
 </script> 
 
 <template>
-   <div class="text-center h-full border-round-sm bg-primary font-bold">
+   <div class="">
     {{ region }}
     {{ tempMap.get(region) }} C
+    <Button label="Show" @click="emit('showWeatherDetail')"/>
   </div>
 </template>
 <style scoped>
